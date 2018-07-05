@@ -1,5 +1,7 @@
 # Banner
-a simple banner for android , thanks all githubor
+1：简化了 young-banner
+2：添加了通过 ViewFilpper 自定义banner
+a simple banner for android , thanks young
 Step 1. Add the JitPack repository to your build file
 Add it in your root build.gradle at the end of repositories:
 ```
