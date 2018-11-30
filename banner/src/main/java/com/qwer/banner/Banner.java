@@ -14,9 +14,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import static android.support.v4.view.ViewPager.OnPageChangeListener;
  * Created by woaigmz on 2018/1/17.
  */
 
-public class Banner extends FrameLayout implements OnPageChangeListener, View.OnClickListener {
+public class Banner extends RelativeLayout implements OnPageChangeListener, View.OnClickListener {
 
     public String tag = "banner";
     private int mIndicatorMargin = BannerConfig.PADDING_SIZE;
@@ -83,7 +83,7 @@ public class Banner extends FrameLayout implements OnPageChangeListener, View.On
     private void initView(AttributeSet attrs) {
         imageViews.clear();
         handleTypedArray(attrs);
-        View view = LayoutInflater.from(context).inflate(R.layout.banner, this, true);
+        View view = LayoutInflater.from(context).inflate(R.layout.banner, this, false);
 
         mBannerLoadingView = view.findViewById(R.id.view_banner_loading);
         indicator = view.findViewById(R.id.ll_homepage_bannerdot);
