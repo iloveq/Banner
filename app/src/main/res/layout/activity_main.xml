@@ -2,19 +2,25 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.woaiqw.happy.banner.MainActivity">
 
     <com.qwer.banner.Banner
-        android:layout_marginTop="15px"
+        android:background="@drawable/bg"
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:banner_height="50dp"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/auto_bid_detail_banner"
-        android:layout_width="670px"
-        android:layout_height="wrap_content"
-        app:banner_image_scale_type="center_inside"
+        app:banner_image_scale_type="fit_xy"
         app:banner_indicator_drawable_selected="@mipmap/detail_banner_dot_selected"
         app:banner_indicator_drawable_unselected="@mipmap/detail_banner_dot_unselected"
-        app:banner_is_auto_play="false" />
+        app:banner_is_auto_play="false"
+        app:layout_constraintBottom_toBottomOf="@id/parent"
+        app:layout_constraintLeft_toLeftOf="@id/parent"
+        app:layout_constraintRight_toRightOf="@id/parent"
+        app:layout_constraintTop_toTopOf="@id/parent" />
 
 </android.support.constraint.ConstraintLayout>

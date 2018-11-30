@@ -8,6 +8,7 @@
 
         <attr name="banner_indicator_width" format="dimension" />
         <attr name="banner_indicator_height" format="dimension" />
+        <attr name="banner_height" format="dimension" />
         <attr name="banner_indicator_margin" format="dimension" />
         <attr name="banner_indicator_drawable_selected" format="reference" />
         <attr name="banner_indicator_drawable_unselected" format="reference" />

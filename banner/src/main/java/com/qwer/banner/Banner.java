@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -41,11 +40,12 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
     private int scrollTime = BannerConfig.DURATION;
     private boolean isAutoPlay = BannerConfig.IS_AUTO_PLAY;
     private boolean isScroll = BannerConfig.IS_SCROLL;
+    int bannerHeight;
     private Context context;
     private List imageUrls;
     private List<View> imageViews;
     private List<ImageView> indicatorImages;
-    private View mBannerLoadingView;
+    private View loadingView;
     private BannerViewPager viewPager;
     private BannerScroller mScroller;
     private LinearLayout indicator;
@@ -57,7 +57,6 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
     private int scaleType = 1;
     private int gravity = -1;
     private ImageEngine imageLoader;
-    private DisplayMetrics dm;
     private OnBannerListener listener;
     private WeakHandler handler = new WeakHandler();
 
@@ -75,31 +74,35 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
         imageUrls = new ArrayList<>();
         imageViews = new ArrayList<>();
         indicatorImages = new ArrayList<>();
-        dm = context.getResources().getDisplayMetrics();
-        indicatorSize = dm.widthPixels / 80;
+        indicatorSize = context.getResources().getDisplayMetrics().widthPixels / 80;
         initView(attrs);
     }
 
     private void initView(AttributeSet attrs) {
+        View view = LayoutInflater.from(context).inflate(R.layout.banner, this, true);
         imageViews.clear();
         handleTypedArray(attrs);
-        View view = LayoutInflater.from(context).inflate(R.layout.banner, this, false);
-
-        mBannerLoadingView = view.findViewById(R.id.view_banner_loading);
         indicator = view.findViewById(R.id.ll_homepage_bannerdot);
         viewPager = view.findViewById(R.id.avp_homepage_banner);
-        mBannerLoadingView.setBackgroundResource(mBannerLoadingViewImgRes);
-        mBannerLoadingView.setOnClickListener(this);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, bannerHeight);
+        viewPager.setLayoutParams(params);
+        initLoadView(view);
         initViewPagerScroll();
+    }
+
+    private void initLoadView(View view) {
+        loadingView = view.findViewById(R.id.view_banner_loading);
+        loadingView.setBackgroundResource(mBannerLoadingViewImgRes);
+        loadingView.setOnClickListener(this);
     }
 
 
     public void showLoadingView() {
-        mBannerLoadingView.setVisibility(VISIBLE);
+        loadingView.setVisibility(VISIBLE);
     }
 
     public void dimissLoadingView() {
-        mBannerLoadingView.setVisibility(GONE);
+        loadingView.setVisibility(GONE);
     }
 
     private void handleTypedArray(AttributeSet attrs) {
@@ -110,6 +113,7 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
         int mIndicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_width, indicatorSize);
         int mIndicatorHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_height, indicatorSize);
         mIndicatorMargin = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_margin, BannerConfig.PADDING_SIZE);
+        bannerHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_height, (int) context.getResources().getDimension(R.dimen.banner_height));
         mIndicatorSelectedResId = typedArray.getResourceId(R.styleable.Banner_banner_indicator_drawable_selected, R.drawable.dot_select);
         mIndicatorUnselectedResId = typedArray.getResourceId(R.styleable.Banner_banner_indicator_drawable_unselected, R.drawable.dot);
         scaleType = typedArray.getInt(R.styleable.Banner_banner_image_scale_type, scaleType);
@@ -235,11 +239,11 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
 
     private void setImageList(List<?> imagesUrl) {
         if (imagesUrl == null || imagesUrl.size() <= 0) {
-            mBannerLoadingView.setVisibility(VISIBLE);
+            loadingView.setVisibility(VISIBLE);
             Log.e(tag, "The image data set is empty.");
             return;
         }
-        mBannerLoadingView.setVisibility(GONE);
+        loadingView.setVisibility(GONE);
         initImages();
         for (int i = 0; i <= count + 1; i++) {
             View imageView = null;
@@ -249,6 +253,7 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
             if (imageView == null) {
                 imageView = new ImageView(context);
             }
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, bannerHeight));
             setScaleType(imageView);
             Object url = null;
             if (i == 0) {
