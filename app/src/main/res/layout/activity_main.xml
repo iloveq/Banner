@@ -15,7 +15,7 @@
         android:background="@drawable/bg"
         app:content_image_scale_type="center_inside"
         app:content_height="50dp"
-        app:indicator_margin_top="5dp"
+        app:indicator_margin_top="10dp"
         app:indicator_drawable_selected="@mipmap/detail_banner_dot_selected"
         app:indicator_drawable_unselected="@mipmap/detail_banner_dot_unselected"
         app:is_auto_play="false"

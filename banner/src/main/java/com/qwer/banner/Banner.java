@@ -29,7 +29,6 @@ import static android.support.v4.view.ViewPager.OnPageChangeListener;
 public class Banner extends RelativeLayout implements OnPageChangeListener, View.OnClickListener {
 
     private int indicatorMargin = BannerConfig.PADDING_SIZE;
-    private int dotMarginDefault;
     private int indicatorSelectedResId = R.drawable.dot_select;
     private int indicatorUnselectedResId = R.drawable.dot;
     private int bannerLoadingViewImgRes;
@@ -96,17 +95,15 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
 
     private void setIndicatorParams() {
         indicator = root.findViewById(R.id.ll_homepage_banner_dots);
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, indictorMarginTop);
-        params.topMargin = indictorMarginTop;
-        params.height = indicatorHeight;
-        params.width = indicatorWidth;
-        indicator.setLayoutParams(params);
+        indicator.setMinimumHeight(indicatorHeight);
+        indicator.setMinimumWidth(indicatorWidth);
     }
 
     private void setViewPagerParams() {
         viewPager = root.findViewById(R.id.avp_homepage_banner);
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, contentHeight);
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        params.bottomMargin = indictorMarginTop;
         viewPager.setLayoutParams(params);
     }
 
@@ -136,9 +133,9 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
         if (attrs == null) {
             return;
         }
-        dotMarginDefault = context.getResources().getDisplayMetrics().widthPixels / 80;
+        int dotMarginDefault = context.getResources().getDisplayMetrics().widthPixels / 80;
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.Banner);
-        indicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_width,  context.getResources().getDisplayMetrics().widthPixels);
+        indicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_width, context.getResources().getDisplayMetrics().widthPixels);
         indicatorHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_height, (int) context.getResources().getDimension(R.dimen.indicator_height));
         indicatorMargin = typedArray.getDimensionPixelSize(R.styleable.Banner_dot_margin, BannerConfig.PADDING_SIZE);
         indictorMarginTop = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_margin_top, BannerConfig.PADDING_SIZE);
