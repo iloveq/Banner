@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_homepage_banner"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/banner_height">
+    android:layout_height="wrap_content">
 
     <com.qwer.banner.BannerViewPager
         android:id="@+id/avp_homepage_banner"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/ll_homepage_bannerdot"
@@ -19,6 +19,7 @@
         android:orientation="horizontal" />
 
     <View
+        android:visibility="gone"
         android:id="@+id/view_banner_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

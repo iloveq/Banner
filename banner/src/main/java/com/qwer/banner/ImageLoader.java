@@ -7,7 +7,7 @@ import android.widget.ImageView;
  * Created by woaigmz on 2018/1/17.
  */
 
-public abstract class ImageLoader implements ImageLoaderInterface<ImageView> {
+public abstract class ImageLoader implements ImageEngine<ImageView> {
 
     @Override
     public ImageView createImageView(Context context) {

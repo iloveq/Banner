@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/banner_height">
+    android:layout_height="wrap_content">
     <ViewFlipper
         android:id="@+id/vf_banner"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/ll_homepage_bannerdot"
@@ -17,6 +17,7 @@
         android:orientation="horizontal" />
 
     <View
+        android:visibility="gone"
         android:id="@+id/view_banner_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

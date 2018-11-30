@@ -51,7 +51,7 @@ public class BannerFlipper extends RelativeLayout {
     private View mBannerLoadingView;
     private int count = 0;
     private float mFlipGap;
-    private ImageLoaderInterface imageLoader;
+    private ImageEngine imageLoader;
     private TranslateAnimation rightInAnim, leftOutAnim, rightOutAnim, leftInAnim;
 
     public BannerFlipper(Context context) {
@@ -222,7 +222,7 @@ public class BannerFlipper extends RelativeLayout {
         }
     }
 
-    public void setImageLoader(ImageLoaderInterface imageLoader) {
+    public void setImageLoader(ImageEngine imageLoader) {
         this.imageLoader = imageLoader;
     }
 

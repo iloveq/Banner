@@ -18,8 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.qwer.banner.R;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +32,6 @@ public class Banner extends FrameLayout implements OnPageChangeListener, View.On
 
     public String tag = "banner";
     private int mIndicatorMargin = BannerConfig.PADDING_SIZE;
-    private int mIndicatorWidth;
-    private int mIndicatorHeight;
     private int indicatorSize;
     private int mIndicatorSelectedResId = R.drawable.dot_select;
     private int mIndicatorUnselectedResId = R.drawable.dot;
@@ -60,7 +56,7 @@ public class Banner extends FrameLayout implements OnPageChangeListener, View.On
     private int count = 0;
     private int scaleType = 1;
     private int gravity = -1;
-    private ImageLoaderInterface imageLoader;
+    private ImageEngine imageLoader;
     private DisplayMetrics dm;
     private OnBannerListener listener;
     private WeakHandler handler = new WeakHandler();
@@ -90,9 +86,9 @@ public class Banner extends FrameLayout implements OnPageChangeListener, View.On
         View view = LayoutInflater.from(context).inflate(R.layout.banner, this, true);
 
         mBannerLoadingView = view.findViewById(R.id.view_banner_loading);
-        indicator = (LinearLayout) view.findViewById(R.id.ll_homepage_bannerdot);
-        viewPager = (BannerViewPager) view.findViewById(R.id.avp_homepage_banner);
-        // mBannerLoadingView.setBackgroundResource(mBannerLoadingViewImgRes);
+        indicator = view.findViewById(R.id.ll_homepage_bannerdot);
+        viewPager = view.findViewById(R.id.avp_homepage_banner);
+        mBannerLoadingView.setBackgroundResource(mBannerLoadingViewImgRes);
         mBannerLoadingView.setOnClickListener(this);
         initViewPagerScroll();
     }
@@ -111,8 +107,8 @@ public class Banner extends FrameLayout implements OnPageChangeListener, View.On
             return;
         }
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.Banner);
-        mIndicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_width, indicatorSize);
-        mIndicatorHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_height, indicatorSize);
+        int mIndicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_width, indicatorSize);
+        int mIndicatorHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_height, indicatorSize);
         mIndicatorMargin = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_margin, BannerConfig.PADDING_SIZE);
         mIndicatorSelectedResId = typedArray.getResourceId(R.styleable.Banner_banner_indicator_drawable_selected, R.drawable.dot_select);
         mIndicatorUnselectedResId = typedArray.getResourceId(R.styleable.Banner_banner_indicator_drawable_unselected, R.drawable.dot);
@@ -217,7 +213,7 @@ public class Banner extends FrameLayout implements OnPageChangeListener, View.On
         return super.dispatchTouchEvent(ev);
     }
 
-    public void setImageLoader(ImageLoaderInterface imageLoader) {
+    public void setImageLoader(ImageEngine imageLoader) {
         this.imageLoader = imageLoader;
     }
 
