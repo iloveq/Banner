@@ -74,7 +74,7 @@ public class BannerFlipper extends RelativeLayout {
         View view = LayoutInflater.from(context).inflate(R.layout.banner_flipper, this, true);
         mFlipper = view.findViewById(R.id.vf_banner);
         mBannerLoadingView = view.findViewById(R.id.view_banner_loading);
-        indicator = view.findViewById(R.id.ll_homepage_bannerdot);
+        indicator = view.findViewById(R.id.ll_homepage_banner_dots);
         mFlipper.setAutoStart(isScroll);
         mFlipper.setFlipInterval(delayTime);
         mGesture = new GestureDetector(new BannerGestureDetectorListener(this));
@@ -116,16 +116,16 @@ public class BannerFlipper extends RelativeLayout {
             return;
         }
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.Banner);
-        mIndicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_width, indicatorSize);
-        mIndicatorHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_height, indicatorSize);
-        mIndicatorMargin = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_margin, BannerConfig.PADDING_SIZE);
-        mIndicatorSelectedResId = typedArray.getResourceId(R.styleable.Banner_banner_indicator_drawable_selected, R.drawable.dot_select);
-        mIndicatorUnselectedResId = typedArray.getResourceId(R.styleable.Banner_banner_indicator_drawable_unselected, R.drawable.dot);
-        scaleType = typedArray.getInt(R.styleable.Banner_banner_image_scale_type, scaleType);
-        delayTime = typedArray.getInt(R.styleable.Banner_banner_delay_time, BannerConfig.TIME);
-        scrollTime = typedArray.getInt(R.styleable.Banner_banner_scroll_time, BannerConfig.DURATION);
-        isAutoPlay = typedArray.getBoolean(R.styleable.Banner_banner_is_auto_play, BannerConfig.IS_AUTO_PLAY);
-        mBannerLoadingViewImgRes = typedArray.getResourceId(R.styleable.Banner_banner_default_image, R.drawable.no_banner);
+        mIndicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_width, indicatorSize);
+        mIndicatorHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_height, indicatorSize);
+        mIndicatorMargin = typedArray.getDimensionPixelSize(R.styleable.Banner_dot_margin, BannerConfig.PADDING_SIZE);
+        mIndicatorSelectedResId = typedArray.getResourceId(R.styleable.Banner_indicator_drawable_selected, R.drawable.dot_select);
+        mIndicatorUnselectedResId = typedArray.getResourceId(R.styleable.Banner_indicator_drawable_unselected, R.drawable.dot);
+        scaleType = typedArray.getInt(R.styleable.Banner_content_image_scale_type, scaleType);
+        delayTime = typedArray.getInt(R.styleable.Banner_delay_time, BannerConfig.TIME);
+        scrollTime = typedArray.getInt(R.styleable.Banner_scroll_time, BannerConfig.DURATION);
+        isAutoPlay = typedArray.getBoolean(R.styleable.Banner_is_auto_play, BannerConfig.IS_AUTO_PLAY);
+        mBannerLoadingViewImgRes = typedArray.getResourceId(R.styleable.Banner_default_image, R.drawable.no_banner);
         typedArray.recycle();
     }
 

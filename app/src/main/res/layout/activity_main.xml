@@ -8,16 +8,17 @@
     tools:context="com.woaiqw.happy.banner.MainActivity">
 
     <com.qwer.banner.Banner
-        android:background="@drawable/bg"
         android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        app:banner_height="50dp"
         android:layout_gravity="center_horizontal"
-        app:banner_image_scale_type="fit_xy"
-        app:banner_indicator_drawable_selected="@mipmap/detail_banner_dot_selected"
-        app:banner_indicator_drawable_unselected="@mipmap/detail_banner_dot_unselected"
-        app:banner_is_auto_play="false"
+        android:background="@drawable/bg"
+        app:content_image_scale_type="center_inside"
+        app:content_height="50dp"
+        app:indicator_margin_top="5dp"
+        app:indicator_drawable_selected="@mipmap/detail_banner_dot_selected"
+        app:indicator_drawable_unselected="@mipmap/detail_banner_dot_unselected"
+        app:is_auto_play="false"
         app:layout_constraintBottom_toBottomOf="@id/parent"
         app:layout_constraintLeft_toLeftOf="@id/parent"
         app:layout_constraintRight_toRightOf="@id/parent"

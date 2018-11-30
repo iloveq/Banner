@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,18 +28,18 @@ import static android.support.v4.view.ViewPager.OnPageChangeListener;
 
 public class Banner extends RelativeLayout implements OnPageChangeListener, View.OnClickListener {
 
-    public String tag = "banner";
-    private int mIndicatorMargin = BannerConfig.PADDING_SIZE;
-    private int indicatorSize;
-    private int mIndicatorSelectedResId = R.drawable.dot_select;
-    private int mIndicatorUnselectedResId = R.drawable.dot;
-    private int mBannerLoadingViewImgRes;
+    private int indicatorMargin = BannerConfig.PADDING_SIZE;
+    private int dotMarginDefault;
+    private int indicatorSelectedResId = R.drawable.dot_select;
+    private int indicatorUnselectedResId = R.drawable.dot;
+    private int bannerLoadingViewImgRes;
     private int bannerStyle = BannerConfig.CIRCLE_INDICATOR;
     private int delayTime = BannerConfig.TIME;
     private int scrollTime = BannerConfig.DURATION;
     private boolean isAutoPlay = BannerConfig.IS_AUTO_PLAY;
     private boolean isScroll = BannerConfig.IS_SCROLL;
-    int bannerHeight;
+    private int bannerHeight;
+    private int contentHeight;
     private Context context;
     private List imageUrls;
     private List<View> imageViews;
@@ -59,6 +58,10 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
     private ImageEngine imageLoader;
     private OnBannerListener listener;
     private WeakHandler handler = new WeakHandler();
+    private int indicatorWidth;
+    private int indicatorHeight;
+    private View root;
+    private int indictorMarginTop;
 
     public Banner(@NonNull Context context) {
         this(context, null);
@@ -71,29 +74,53 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
     public Banner(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
-        imageUrls = new ArrayList<>();
-        imageViews = new ArrayList<>();
-        indicatorImages = new ArrayList<>();
-        indicatorSize = context.getResources().getDisplayMetrics().widthPixels / 80;
+        createModel();
+        root = LayoutInflater.from(context).inflate(R.layout.banner, this, true);
         initView(attrs);
     }
 
-    private void initView(AttributeSet attrs) {
-        View view = LayoutInflater.from(context).inflate(R.layout.banner, this, true);
+    private void createModel() {
+        imageUrls = new ArrayList<>();
+        imageViews = new ArrayList<>();
+        indicatorImages = new ArrayList<>();
         imageViews.clear();
-        handleTypedArray(attrs);
-        indicator = view.findViewById(R.id.ll_homepage_bannerdot);
-        viewPager = view.findViewById(R.id.avp_homepage_banner);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, bannerHeight);
-        viewPager.setLayoutParams(params);
-        initLoadView(view);
+    }
+
+    private void initView(AttributeSet attrs) {
+        readAttrsFromXmlAndSet(attrs);
+        setIndicatorParams();
+        setViewPagerParams();
+        initLoadView();
         initViewPagerScroll();
     }
 
-    private void initLoadView(View view) {
-        loadingView = view.findViewById(R.id.view_banner_loading);
-        loadingView.setBackgroundResource(mBannerLoadingViewImgRes);
+    private void setIndicatorParams() {
+        indicator = root.findViewById(R.id.ll_homepage_banner_dots);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, indictorMarginTop);
+        params.topMargin = indictorMarginTop;
+        params.height = indicatorHeight;
+        params.width = indicatorWidth;
+        indicator.setLayoutParams(params);
+    }
+
+    private void setViewPagerParams() {
+        viewPager = root.findViewById(R.id.avp_homepage_banner);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, contentHeight);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        viewPager.setLayoutParams(params);
+    }
+
+
+    private void initLoadView() {
+        loadingView = root.findViewById(R.id.view_banner_loading);
+        loadingView.setBackgroundResource(bannerLoadingViewImgRes);
         loadingView.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int spec = bannerHeight == 0 ? heightMeasureSpec : bannerHeight;
+        super.onMeasure(widthMeasureSpec, spec);
     }
 
 
@@ -105,22 +132,25 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
         loadingView.setVisibility(GONE);
     }
 
-    private void handleTypedArray(AttributeSet attrs) {
+    private void readAttrsFromXmlAndSet(AttributeSet attrs) {
         if (attrs == null) {
             return;
         }
+        dotMarginDefault = context.getResources().getDisplayMetrics().widthPixels / 80;
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.Banner);
-        int mIndicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_width, indicatorSize);
-        int mIndicatorHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_height, indicatorSize);
-        mIndicatorMargin = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_indicator_margin, BannerConfig.PADDING_SIZE);
+        indicatorWidth = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_width,  context.getResources().getDisplayMetrics().widthPixels);
+        indicatorHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_height, (int) context.getResources().getDimension(R.dimen.indicator_height));
+        indicatorMargin = typedArray.getDimensionPixelSize(R.styleable.Banner_dot_margin, BannerConfig.PADDING_SIZE);
+        indictorMarginTop = typedArray.getDimensionPixelSize(R.styleable.Banner_indicator_margin_top, BannerConfig.PADDING_SIZE);
         bannerHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_banner_height, (int) context.getResources().getDimension(R.dimen.banner_height));
-        mIndicatorSelectedResId = typedArray.getResourceId(R.styleable.Banner_banner_indicator_drawable_selected, R.drawable.dot_select);
-        mIndicatorUnselectedResId = typedArray.getResourceId(R.styleable.Banner_banner_indicator_drawable_unselected, R.drawable.dot);
-        scaleType = typedArray.getInt(R.styleable.Banner_banner_image_scale_type, scaleType);
-        delayTime = typedArray.getInt(R.styleable.Banner_banner_delay_time, BannerConfig.TIME);
-        scrollTime = typedArray.getInt(R.styleable.Banner_banner_scroll_time, BannerConfig.DURATION);
-        isAutoPlay = typedArray.getBoolean(R.styleable.Banner_banner_is_auto_play, BannerConfig.IS_AUTO_PLAY);
-        mBannerLoadingViewImgRes = typedArray.getResourceId(R.styleable.Banner_banner_default_image, R.drawable.no_banner);
+        contentHeight = typedArray.getDimensionPixelSize(R.styleable.Banner_content_height, (int) context.getResources().getDimension(R.dimen.banner_height));
+        indicatorSelectedResId = typedArray.getResourceId(R.styleable.Banner_indicator_drawable_selected, R.drawable.dot_select);
+        indicatorUnselectedResId = typedArray.getResourceId(R.styleable.Banner_indicator_drawable_unselected, R.drawable.dot);
+        scaleType = typedArray.getInt(R.styleable.Banner_content_image_scale_type, scaleType);
+        delayTime = typedArray.getInt(R.styleable.Banner_delay_time, BannerConfig.TIME);
+        scrollTime = typedArray.getInt(R.styleable.Banner_scroll_time, BannerConfig.DURATION);
+        isAutoPlay = typedArray.getBoolean(R.styleable.Banner_is_auto_play, BannerConfig.IS_AUTO_PLAY);
+        bannerLoadingViewImgRes = typedArray.getResourceId(R.styleable.Banner_default_image, R.drawable.no_banner);
         typedArray.recycle();
     }
 
@@ -140,7 +170,7 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
             mScroller.setDuration(scrollTime);
             mField.set(viewPager, mScroller);
         } catch (Exception e) {
-            Log.e(tag, e.getMessage());
+            // log
         }
     }
 
@@ -190,7 +220,6 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
         public void run() {
             if (count > 1 && isAutoPlay) {
                 currentItem = currentItem % (count + 1) + 1;
-//                Log.i(tag, "curr:" + currentItem + " count:" + count);
                 if (currentItem == 1) {
                     viewPager.setCurrentItem(currentItem, false);
                     handler.post(task);
@@ -204,7 +233,6 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-//        Log.i(tag, ev.getAction() + "--" + isAutoPlay);
         if (isAutoPlay) {
             int action = ev.getAction();
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL
@@ -240,7 +268,6 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
     private void setImageList(List<?> imagesUrl) {
         if (imagesUrl == null || imagesUrl.size() <= 0) {
             loadingView.setVisibility(VISIBLE);
-            Log.e(tag, "The image data set is empty.");
             return;
         }
         loadingView.setVisibility(GONE);
@@ -253,7 +280,7 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
             if (imageView == null) {
                 imageView = new ImageView(context);
             }
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, bannerHeight));
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, contentHeight == 0 ? ViewGroup.LayoutParams.MATCH_PARENT : contentHeight));
             setScaleType(imageView);
             Object url = null;
             if (i == 0) {
@@ -265,10 +292,12 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
             }
 
             imageViews.add(imageView);
-            if (imageLoader != null)
+            if (imageLoader != null) {
                 imageLoader.displayImage(context, url, imageView);
-            else
-                Log.e(tag, "Please set images loader.");
+            } else {
+                // log
+            }
+
         }
     }
 
@@ -283,12 +312,12 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
             ImageView imageView = new ImageView(context);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.leftMargin = mIndicatorMargin;
-            params.rightMargin = mIndicatorMargin;
+            params.leftMargin = indicatorMargin;
+            params.rightMargin = indicatorMargin;
             if (i == 0) {
-                imageView.setImageResource(mIndicatorSelectedResId);
+                imageView.setImageResource(indicatorSelectedResId);
             } else {
-                imageView.setImageResource(mIndicatorUnselectedResId);
+                imageView.setImageResource(indicatorUnselectedResId);
             }
             indicatorImages.add(imageView);
 
@@ -345,8 +374,8 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
         }
         if (bannerStyle == BannerConfig.CIRCLE_INDICATOR || bannerStyle == BannerConfig.CIRCLE_INDICATOR_TITLE || bannerStyle == BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE) {
             if (count != 0) {
-                indicatorImages.get((lastPosition - 1 + count) % count).setImageResource(mIndicatorUnselectedResId);
-                indicatorImages.get((position - 1 + count) % count).setImageResource(mIndicatorSelectedResId);
+                indicatorImages.get((lastPosition - 1 + count) % count).setImageResource(indicatorUnselectedResId);
+                indicatorImages.get((position - 1 + count) % count).setImageResource(indicatorSelectedResId);
                 lastPosition = position;
             }
         }
@@ -356,33 +385,26 @@ public class Banner extends RelativeLayout implements OnPageChangeListener, View
     @Override
     public void onPageScrollStateChanged(int state) {
 
-//        Log.i(tag,"currentItem: "+currentItem);
         switch (state) {
-            case 0://No operation
+            case 0:
                 if (currentItem == 0) {
                     viewPager.setCurrentItem(count, false);
                 } else if (currentItem == count + 1) {
                     viewPager.setCurrentItem(1, false);
                 }
                 break;
-            case 1://start Sliding
+            case 1:
                 if (currentItem == count + 1) {
                     viewPager.setCurrentItem(1, false);
                 } else if (currentItem == 0) {
                     viewPager.setCurrentItem(count, false);
                 }
                 break;
-            case 2://end Sliding
+            case 2:
                 break;
         }
     }
 
-    /**
-     * 返回真实的位置
-     *
-     * @param position
-     * @return 下标从0开始
-     */
 
     public int toRealPosition(int position) {
         int realPosition = 0;
